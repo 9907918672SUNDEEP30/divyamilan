@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -8,7 +8,7 @@ import { doc, getDoc, collection, addDoc, query, where, getDocs } from "firebase
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 
-export default function ViewProfilePage() {
+function ViewProfileContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const router = useRouter();
@@ -178,6 +178,18 @@ export default function ViewProfilePage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ViewProfilePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500" />
+      </div>
+    }>
+      <ViewProfileContent />
+    </Suspense>
   );
 }
 
