@@ -1,0 +1,43 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Profiles collection
+    match /profiles/{userId} {
+      // Anyone logged in can read visible profiles, user can read their own profile even if hidden
+      allow read: if isAuthenticated() && (resource.data.visible == true || isOwner(userId));
+      // Only profile owner can create, update, or delete
+      allow create, update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    // Interests collection
+    match /interests/{interestId} {
+      // Users can read interests sent by or sent to them
+      allow read: if isAuthenticated() && (
+        resource.data.fromUserId == request.auth.uid || 
+        resource.data.toUserId == request.auth.uid
+      );
+      // Sender can create a pending interest
+      allow create: if isAuthenticated() && request.resource.data.fromUserId == request.auth.uid;
+      // Recipient can update status (accept/reject), or sender can cancel
+      allow update: if isAuthenticated() && (
+        resource.data.toUserId == request.auth.uid ||
+        resource.data.fromUserId == request.auth.uid
+      );
+      // Parties involved can delete
+      allow delete: if isAuthenticated() && (
+        resource.data.fromUserId == request.auth.uid ||
+        resource.data.toUserId == request.auth.uid
+      );
+    }
+  }
+}

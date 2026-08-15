@@ -1,0 +1,16 @@
+
+> divyamilan@0.1.0 build
+> next build
+
+▲ Next.js 16.2.11 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 5.0s
+  Running TypeScript ...
+  Finished TypeScript in 149ms ...
+  Collecting page data using 7 workers ...
+
+> Build error occurred
+Error: Page "/profile/[id]" is missing "generateStaticParams()" so it cannot be used with "output: export" config.
+    at ignore-listed frames

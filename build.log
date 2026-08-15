@@ -1,0 +1,41 @@
+
+> divyamilan@0.1.0 build
+> next build
+
+▲ Next.js 16.2.11 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 1 errors:
+./src/app/profile/[id]/page.js:12:8
+Next.js can't recognize the exported `generateStaticParams` field in route. App pages cannot use both "use client" and export function "generateStaticParams()".
+  [90m10 |[0m [90m// Dynamic route for static export: no paths pre-generated at build time.[0m
+  [90m11 |[0m [90m// Firebase Hosting rewrite serves index.html, client-side router handles /profile/{id}[0m
+[31m[1m>[0m [90m12 |[0m [36mexport[0m [36mfunction[0m generateStaticParams() {
+  [90m   |[0m        [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m13 |[0m   [36mreturn[0m [];
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m14 |[0m }
+  [90m   |[0m [31m[1m^[0m
+  [90m15 |[0m
+  [90m16 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mViewProfilePage[0m() {
+  [90m17 |[0m   [36mconst[0m { id } = useParams();
+
+The exported configuration object in a source file needs to have a very specific format from which some properties can be statically parsed at compiled-time.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/profile/[id]/page.js [Client Component Browser]
+    ./src/app/profile/[id]/page.js [Server Component]
+
+  Client Component SSR:
+    ./src/app/profile/[id]/page.js [Client Component SSR]
+    ./src/app/profile/[id]/page.js [Server Component]
+
+https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config
+
+
+    at <unknown> (./src/app/profile/[id]/page.js:12:8)
+    at <unknown> (https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config)
