@@ -110,7 +110,7 @@ export default function MatchesPage() {
                       ) : (item.fromProfile?.gender === "Male" ? "👨" : "👩")}
                     </div>
                     <div className="flex-1">
-                      <Link href={`/profile/${item.fromUserId}`} className="text-lg font-semibold text-gray-900 hover:text-rose-600">
+                      <Link href={`/profile?id=${item.fromUserId}`} className="text-lg font-semibold text-gray-900 hover:text-rose-600">
                         {item.fromName}
                       </Link>
                       <p className="text-sm text-gray-500">

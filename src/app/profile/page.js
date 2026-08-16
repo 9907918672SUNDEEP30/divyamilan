@@ -12,7 +12,7 @@ function ViewProfileContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const router = useRouter();
-  const { user, profile: myProfile } = useAuth();
+  const { user, loading: authLoading, profile: myProfile } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [interestSent, setInterestSent] = useState(false);
@@ -20,13 +20,15 @@ function ViewProfileContent() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (id) {
-      fetchProfile();
-    } else {
-      setLoading(false);
+    if (!authLoading) {
+      if (user && id) {
+        fetchProfile();
+      } else {
+        setLoading(false);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, user]);
+  }, [id, user, authLoading]);
 
   const fetchProfile = async () => {
     try {
@@ -89,10 +91,23 @@ function ViewProfileContent() {
     }
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">Please sign in to view profiles.</p>
+          <Link href="/login" className="text-rose-600 hover:text-rose-700 font-medium">
+            Sign In
+          </Link>
+        </div>
       </div>
     );
   }

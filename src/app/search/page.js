@@ -8,7 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { GOTRAS, CITIES, EDUCATION } from "@/lib/constants";
 
 export default function SearchPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
@@ -17,8 +17,15 @@ export default function SearchPage() {
   });
 
   useEffect(() => {
-    fetchProfiles();
-  }, []);
+    if (!authLoading) {
+      if (user) {
+        fetchProfiles();
+      } else {
+        setLoading(false);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading, user]);
 
   const fetchProfiles = async () => {
     setLoading(true);
@@ -60,6 +67,27 @@ export default function SearchPage() {
     if (filters.maxAge && age && age > parseInt(filters.maxAge)) return false;
     return true;
   });
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">Please sign in to search profiles.</p>
+          <Link href="/login" className="text-rose-600 hover:text-rose-700 font-medium">
+            Sign In
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen py-12 px-4">
