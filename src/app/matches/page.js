@@ -7,15 +7,16 @@ import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 
 export default function MatchesPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [received, setReceived] = useState([]);
   const [sent, setSent] = useState([]);
   const [tab, setTab] = useState("received");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) fetchInterests();
-  }, [user]);
+    if (!authLoading && user) fetchInterests();
+    else if (!authLoading && !user) setLoading(false);
+  }, [user, authLoading]);
 
   const fetchInterests = async () => {
     setLoading(true);
@@ -51,15 +52,27 @@ export default function MatchesPage() {
   };
 
   const handleInterest = async (interestId, action) => {
+    const newStatus = action === "accept" ? "accepted" : "rejected";
+    // Optimistic update — no full reload needed
+    setReceived((prev) =>
+      prev.map((item) => item.id === interestId ? { ...item, status: newStatus } : item)
+    );
     try {
-      await updateDoc(doc(db, "interests", interestId), {
-        status: action === "accept" ? "accepted" : "rejected",
-      });
-      fetchInterests();
+      await updateDoc(doc(db, "interests", interestId), { status: newStatus });
     } catch (err) {
       console.error("Error updating interest:", err);
+      // Rollback on failure
+      fetchInterests();
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500" />
+      </div>
+    );
+  }
 
   if (!user) {
     return (

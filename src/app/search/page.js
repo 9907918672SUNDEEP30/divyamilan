@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { GOTRAS, CITIES, EDUCATION } from "@/lib/constants";
@@ -33,7 +33,8 @@ export default function SearchPage() {
       const q = query(
         collection(db, "profiles"),
         where("profileComplete", "==", true),
-        where("visible", "==", true)
+        where("visible", "==", true),
+        limit(100)  // Performance: cap at 100 profiles per load
       );
       const snapshot = await getDocs(q);
       const allProfiles = snapshot.docs
