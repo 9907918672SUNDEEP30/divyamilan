@@ -1,3 +1,4 @@
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
@@ -18,7 +19,18 @@ export const metadata = {
   title: "DivyaMilan - Find Your Perfect Match",
   description:
     "DivyaMilan - The premier matrimonial platform. Find your perfect life partner.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "DivyaMilan",
+  },
 };
+
+export const viewport = {
+  themeColor: "#e11d48",
+};
+
 
 export default function RootLayout({ children }) {
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
@@ -29,6 +41,7 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
+        <link rel="apple-touch-icon" href="/icon/icon-192x192.png" />
         {gaId && (
           <>
             <Script
@@ -47,6 +60,7 @@ export default function RootLayout({ children }) {
         )}
       </head>
       <body className="min-h-full flex flex-col bg-rose-50/30">
+        <ServiceWorkerRegister />
         <AuthProvider>
           <Navbar />
           <main className="flex-1">{children}</main>
